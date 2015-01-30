@@ -13,21 +13,23 @@ def main():
     df = get_log_as_frame(log_file)
     print(df)
     df['Status'] = df['Status'].astype('int')
-    
+    print('< < < < < < Done reading frame > > > > > >')
+
     set_index(df, 'Date')
-    
-    df_s = resample_column(df, 'Status', '10t')
+    print('< < < < < < Done setting index on timestamp > > > > > >')
+
+    df_s = resample_column(df, 'Status', '1Min')
+    print('< < < < < < Done resampling requests per minute > > > > >')
     df_s.plot()
 
-    df_api = get_requests_regex(df, 'api')
-    df_queries = get_requests_regex(df, '\?query')
-    print(df_queries)
+    #df_api = get_requests_regex(df, 'api')
+    #df_queries = get_requests_regex(df, '\?query')
+    #print(df_queries)
     
     grouped_status = df.groupby('Status')
+    print('< < < < < < Done grouping by response code > > > > > >')
     fig = pl.figure()
-    
     print(grouped_status.size())
-    
     grouped_status.size().plot(kind='bar')
     pl.show()
 
