@@ -5,19 +5,31 @@ import matplotlib.pyplot as plt
 import re
 from pandas import Series, DataFrame, Panel
 import pylab as pl
+import os
 
 def main():
     
-    log_file = open('access.log', 'r')
+    if os.path.isfile('accesslog_index.csv'):
+        print("< < < < < < Reading from csv > > > > > >")
+        df = pd.read_csv('accesslog_index.csv')
+        print("< < < < < < Done reading from csv > > > > > >")
+        df.index = pd.to_datetime(df.pop('Date'))
+        print('< < < < < < Done setting index on timestamp > > > > > >')
+    else:
+        print("< < < < < < Reading from log > > > > > >")
+        log_file = open('access.log', 'r')
 
-    df = get_log_as_frame(log_file)
+        df = get_log_as_frame(log_file)
+        print(df)
+    
+        df['Status'] = df['Status'].astype('int')
+        print('< < < < < < Done reading frame > > > > > >')
+
+        set_index(df, 'Date')
+        df.to_csv('accesslog_index.csv')
+        print('< < < < < < Done setting index on timestamp > > > > > >')
+
     print(df)
-    df['Status'] = df['Status'].astype('int')
-    print('< < < < < < Done reading frame > > > > > >')
-
-    set_index(df, 'Date')
-    print('< < < < < < Done setting index on timestamp > > > > > >')
-
     df_s = resample_column(df, 'Status', '1Min')
     print('< < < < < < Done resampling requests per minute > > > > >')
     df_s.plot()
